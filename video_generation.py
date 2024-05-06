@@ -150,7 +150,15 @@ class VideoGenerator:
     def _inference(self, inp: str, out: str):
         print(f"Generating attention images to {out}")
 
-        for img_path in tqdm(sorted(glob.glob(os.path.join(inp, "*.jpg")))):
+        image_files = []
+        for ext in ["*.png", "*.jpg"]:
+            image_files.extend(glob.glob(os.path.join(inp, ext)))
+        
+        # detect extension of first image
+        ext = os.path.splitext(image_files[0])[1]
+
+        # glob pngs and jpgs
+        for img_path in tqdm(sorted(glob.glob(os.path.join(inp, "*" + ext)))):
             with open(img_path, "rb") as f:
                 img = Image.open(f)
                 img = img.convert("RGB")
@@ -234,7 +242,7 @@ class VideoGenerator:
                     for i in range(attentions.shape[0])
                 ),
                 cmap="inferno",
-                format="jpg",
+                format=ext.replace(".", ""),
             )
 
     def __load_model(self):
